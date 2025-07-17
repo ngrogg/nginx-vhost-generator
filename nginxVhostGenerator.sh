@@ -14,7 +14,6 @@ yellow=$(tput setaf 3)
 ## Set text back to standard terminal font
 normal=$(tput sgr0)
 
-
 # Help function
 function helpFunction(){
     printf "%s\n" \
@@ -44,6 +43,21 @@ function runProgram(){
     printf "%s\n" \
     "Generate" \
     "----------------------------------------------------"
+
+    ## Variables
+    siteDomain=$1
+    wwwRedirect=$2
+    httpRedirect=$3
+    wordpressSite=$4
+    docrootDefined=$5
+    proxyPass=$6
+
+    ## Create output directory
+    if [[ ! -f output ]]; then
+            mkdir output
+    fi
+
+    ## RPM/DEB check
 }
 
 # Main, read passed flags
