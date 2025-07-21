@@ -52,12 +52,46 @@ function runProgram(){
     docrootDefined=$5
     proxyPass=$6
 
-    ## Create output directory
+    ## Create output directory if it doesn't exist
     if [[ ! -f output ]]; then
             mkdir output
     fi
 
-    ## RPM/DEB check
+    ## RPM/DEB check, assign filepath variables based on output
+    ## Private IP to variable, filter private IP of server
+
+    ## Questions for VirtualHost, all assume a flag wasn't passed
+    ### Domain
+    ### WWW Redirect?
+    ### HTTP -> HTTPS?
+    ### Docroot defined?
+    ### Proxy Pass to another server?
+
+    ## Value Confirmation, last chance to bail out
+
+    ## Check for vhost with file name already, move to new name and disable old vhost if so
+
+    ## Begin HTTP Virtualhost section
+    ### If HTTP -> HTTPS = 1
+    #### If WWW Redirect = 1
+    #### Redirect to HTTPS
+    #### Close HTTP Virtualhost section
+
+    ### Begin HTTPS Virtualhost section
+
+    #### If WWW Redirect = 1
+
+    ### Logging
+
+    ### SSL Placeholder
+
+    ### Proxy Pass to another server?
+
+    ### Create a docroot for domain?
+    ### Close HTTPS Virtualhost tag
+
+    ## Closing notes
+
 }
 
 # Main, read passed flags
