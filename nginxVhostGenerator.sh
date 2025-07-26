@@ -31,8 +31,8 @@ function helpFunction(){
     " " \
     "Script can also take answer to questions as arguments" \
     "Answer 1 for yes and 0 for no" \
-    "Usage. ./nginxVhostGenerator.sh generate DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? WORDPRESS? DOCROOT? PROXY_PASS?" \
-    "Ex. ./nginxVhostGenerator.sh generate rustyspoon.com 1 1 0 1 0" \
+    "Usage. ./nginxVhostGenerator.sh generate DOMAIN WWW_REDIRECT? HTTP_TO_HTTPS? DOCROOT? PROXY_PASS?" \
+    "Ex. ./nginxVhostGenerator.sh generate rustyspoon.com 1 1 1 0" \
     " " \
     "See README for breakdown of questions" \
     "If unsure, run guided script."
@@ -48,9 +48,8 @@ function runProgram(){
     siteDomain=$1
     wwwRedirect=$2
     httpRedirect=$3
-    wordpressSite=$4
-    docrootDefined=$5
-    proxyPass=$6
+    docrootDefined=$4
+    proxyPass=$5
 
     ## Create output directory if it doesn't exist
     if [[ ! -f output ]]; then
@@ -58,7 +57,9 @@ function runProgram(){
     fi
 
     ## RPM/DEB check, assign filepath variables based on output
+
     ## Private IP to variable, filter private IP of server
+    privateIP=$(hostname -i | awk '{print $1}')
 
     ## Questions for VirtualHost, all assume a flag wasn't passed
     ### Domain
@@ -68,6 +69,22 @@ function runProgram(){
     ### Proxy Pass to another server?
 
     ## Value Confirmation, last chance to bail out
+    printf "%s\n" \
+    "${yellow}IMPORTANT: Value Confirmation" \
+    "----------------------------------------------------" \
+    "Site Domain: " "$siteDomain" \
+    " " \
+    "Should there be a WWW Redirect?" "$wwwRedirect" \
+    " " \
+    "Should there be a HTTP -> HTTPS Redirect?" "$httpRedirect" \
+    " " \
+    "Should a Docroot be defined?" "$docrootDefined" \
+    " " \
+    "Should a Proxy Pass be defined?" "$proxyPass" \
+    " " \
+    "If all clear, press enter to proceed or ctrl-c to cancel${normal}" \
+    " "
+    read junkInput
 
     ## Check for vhost with file name already, move to new name and disable old vhost if so
 
