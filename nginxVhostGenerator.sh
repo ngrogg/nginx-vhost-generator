@@ -183,10 +183,10 @@ function runProgram(){
 
         ## Close HTTP Virtualhost section
         echo "}" >> output/$siteDomain.conf
+        echo "    " >> output/$siteDomain.conf
     fi
 
     ### Begin HTTPS Virtualhost section
-    echo "    " >> output/$siteDomain.conf
     echo "# HTTPS Section" >> output/$siteDomain.conf
     echo "server {" >> output/$siteDomain.conf
     echo "    ## Listen on HTTPS port" >> output/$siteDomain.conf
@@ -195,7 +195,10 @@ function runProgram(){
 
     #### If WWW Redirect = 1
     if [[ $wwwRedirect -eq "1" ]]; then
-        redirectDomain+="$siteDomain www.$siteDomain"
+        ##### Edge case from testing
+        if [[ $wwwRedirect -eq "1" && $httpRedirect -eq "0" ]]; then
+            redirectDomain+="$siteDomain www.$siteDomain"
+        fi
         echo "    " >> output/$siteDomain.conf
         echo "    ## Domain" >> output/$siteDomain.conf
         echo "    server_name $redirectDomain;" >> output/$siteDomain.conf
@@ -212,7 +215,9 @@ function runProgram(){
     ### Proxy Pass to another server?
 
     ### Create a docroot for domain?
+
     ### Close HTTPS Virtualhost tag
+    echo "}" >> output/$siteDomain.conf
 
     ## Closing notes
 
