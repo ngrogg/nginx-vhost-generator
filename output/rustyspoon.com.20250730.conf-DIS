@@ -1,0 +1,9 @@
+# HTTP Section
+server {
+    ## Listen on HTTP port
+    listen 80;
+    listen [::]:80;
+    
+    ## Domain
+    server_name rustyspoon.com;
+}

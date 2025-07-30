@@ -14,6 +14,9 @@ yellow=$(tput setaf 3)
 ## Set text back to standard terminal font
 normal=$(tput sgr0)
 
+# TODO: Remove when done
+#echo "    " >> output/$siteDomain.conf
+
 # Help function
 function helpFunction(){
     printf "%s\n" \
@@ -56,17 +59,78 @@ function runProgram(){
             mkdir output
     fi
 
-    ## RPM/DEB check, assign filepath variables based on output
-
     ## Private IP to variable, filter private IP of server
     privateIP=$(hostname -i | awk '{print $1}')
 
     ## Questions for VirtualHost, all assume a flag wasn't passed
     ### Domain
+    if [[ -z $siteDomain ]]; then
+            printf "%s\n" \
+            "${yellow}What is the Domain?" \
+            "----------------------------------------------------" \
+            "Ex. rustyspoon.com" \
+            " " \
+            "Enter site domain to use:${normal}" \
+            " "
+            read siteDomain
+    fi
+
     ### WWW Redirect?
+    if [[ -z $wwwRedirect ]]; then
+            printf "%s\n" \
+            "${yellow}Is there a WWW Redirect?" \
+            "----------------------------------------------------" \
+            "WWW redirect for domain?" \
+            "This is not needed if there isn't a CNAME redirect." \
+            " " \
+            "Ex. www.rustyspoon.com would redirect to rustyspoon.com" \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read wwwRedirect
+    fi
+
     ### HTTP -> HTTPS?
+    if [[ -z $httpRedirect ]]; then
+            printf "%s\n" \
+            "${yellow}Should HTTP traffice redirect to HTTPS?" \
+            "----------------------------------------------------" \
+            "Redirect HTTP (port 80) traffic to HTTPS on (port 443)? " \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read httpRedirect
+    fi
+
     ### Docroot defined?
+    if [[ -z $docrootDefined ]]; then
+            printf "%s\n" \
+            "${yellow}Is there a Docroot?" \
+            "----------------------------------------------------" \
+            "Should a Docroot be defined?" \
+            "This option should not be used with Proxy Pass" \
+            " " \
+            "A Generic docroot will be defined" \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read docrootDefined
+    fi
+
     ### Proxy Pass to another server?
+    if [[ -z $proxyPass ]]; then
+            printf "%s\n" \
+            "${yellow}Is there a Proxy Pass?" \
+            "----------------------------------------------------" \
+            "Will traffic be proxied to another server?" \
+            "This option should not be used with Docroot" \
+            " " \
+            "A Generic Proxy Pass will be defined " \
+            " " \
+            "Enter: 1 for yes or 0 for no${normal}" \
+            " "
+            read proxyPass
+    fi
 
     ## Value Confirmation, last chance to bail out
     printf "%s\n" \
@@ -87,16 +151,59 @@ function runProgram(){
     read junkInput
 
     ## Check for vhost with file name already, move to new name and disable old vhost if so
+    if [[ -f output/$siteDomain.conf ]]; then
+            mv output/$siteDomain.conf output/$siteDomain.$(date +%Y%m%d).conf-DIS
+    fi
 
     ## Begin HTTP Virtualhost section
     ### If HTTP -> HTTPS = 1
-    #### If WWW Redirect = 1
-    #### Redirect to HTTPS
-    #### Close HTTP Virtualhost section
+    if [[ $httpRedirect -eq "1" ]]; then
+        echo "# HTTP Section" >> output/$siteDomain.conf
+        echo "server {" >> output/$siteDomain.conf
+        echo "    ## Listen on HTTP port" >> output/$siteDomain.conf
+        echo "    listen 80;" >> output/$siteDomain.conf
+        echo "    listen [::]:80;" >> output/$siteDomain.conf
+
+        ### If WWW Redirect = 1 append www to domain
+        if [[ $wwwRedirect -eq "1" ]]; then
+            redirectDomain+="$siteDomain www.$siteDomain"
+            echo "    " >> output/$siteDomain.conf
+            echo "    ## Domain" >> output/$siteDomain.conf
+            echo "    server_name $redirectDomain;" >> output/$siteDomain.conf
+        else
+            echo "    " >> output/$siteDomain.conf
+            echo "    ## Domain" >> output/$siteDomain.conf
+            echo "    server_name $siteDomain;" >> output/$siteDomain.conf
+        fi
+
+        #### Redirect to HTTPS
+            echo "    " >> output/$siteDomain.conf
+            echo "    ## Redirect to HTTPS, use 302 for SEO" >> output/$siteDomain.conf
+            echo "    return 302 https://\$host\$request_uri;" >> output/$siteDomain.conf
+
+        ## Close HTTP Virtualhost section
+        echo "}" >> output/$siteDomain.conf
+    fi
 
     ### Begin HTTPS Virtualhost section
+    echo "    " >> output/$siteDomain.conf
+    echo "# HTTPS Section" >> output/$siteDomain.conf
+    echo "server {" >> output/$siteDomain.conf
+    echo "    ## Listen on HTTPS port" >> output/$siteDomain.conf
+    echo "    listen 443 ssl;" >> output/$siteDomain.conf
+    echo "    listen [::]:443 ssl;" >> output/$siteDomain.conf
 
     #### If WWW Redirect = 1
+    if [[ $wwwRedirect -eq "1" ]]; then
+        redirectDomain+="$siteDomain www.$siteDomain"
+        echo "    " >> output/$siteDomain.conf
+        echo "    ## Domain" >> output/$siteDomain.conf
+        echo "    server_name $redirectDomain;" >> output/$siteDomain.conf
+    else
+        echo "    " >> output/$siteDomain.conf
+        echo "    ## Domain" >> output/$siteDomain.conf
+        echo "    server_name $siteDomain;" >> output/$siteDomain.conf
+    fi
 
     ### Logging
 
