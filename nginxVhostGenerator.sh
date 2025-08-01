@@ -249,6 +249,9 @@ function runProgram(){
         echo "    " >> output/$siteDomain.conf
         echo "    ## Disable symlink handling" >> output/$siteDomain.conf
         echo "    disable_symlinks on;" >> output/$siteDomain.conf
+        echo "    " >> output/$siteDomain.conf
+        echo "    ## Hide nginx version" >> output/$siteDomain.conf
+        echo "    server_tokens off;" >> output/$siteDomain.conf
     fi
 
     ### File blocks
