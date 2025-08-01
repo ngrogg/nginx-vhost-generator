@@ -52,7 +52,7 @@ function runProgram(){
     proxyPass=$5
 
     ## Create output directory if it doesn't exist
-    if [[ ! -f output ]]; then
+    if [[ ! -d output ]]; then
             mkdir output
     fi
 

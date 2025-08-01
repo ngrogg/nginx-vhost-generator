@@ -1,0 +1,9 @@
+# HTTPS Section
+server {
+    ## Listen on HTTPS port
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    
+    ## Domain
+    server_name rustyspoon.com www.rustyspoon.com;
+}
