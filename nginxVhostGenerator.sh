@@ -14,9 +14,6 @@ yellow=$(tput setaf 3)
 ## Set text back to standard terminal font
 normal=$(tput sgr0)
 
-# TODO: Remove when done
-#echo "    " >> output/$siteDomain.conf
-
 # Help function
 function helpFunction(){
     printf "%s\n" \
@@ -209,17 +206,76 @@ function runProgram(){
     fi
 
     ### Logging
+    echo "    " >> output/$siteDomain.conf
+    echo "    ## Logging" >> output/$siteDomain.conf
+    echo "    access_log /var/log/nginx/$siteDomain.access.log;" >> output/$siteDomain.conf
+    echo "    error_log  /var/log/nginx/$siteDomain.error.log error;" >> output/$siteDomain.conf
+
 
     ### SSL Placeholder
+    echo "    " >> output/$siteDomain.conf
+    echo "    ## SSL Configurations" >> output/$siteDomain.conf
+    echo "    ### SSL Protocols to use" >> output/$siteDomain.conf
+    echo "    ssl_protocols TLSv1.2 TLSv1.3;" >> output/$siteDomain.conf
+    echo "    " >> output/$siteDomain.conf
+    echo "    #TODO: Update ciphers as needed" >> output/$siteDomain.conf
+    echo "    ### SSL Ciphers to allow/deny" >> output/$siteDomain.conf
+    echo "    ssl_ciphers \"ECDH+AESGCM:ECDH+CHACHA20:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS\";" >> output/$siteDomain.conf
+    echo "    " >> output/$siteDomain.conf
+    echo "    #TODO: Replace with proper SSL filepath" >> output/$siteDomain.conf
+    echo "    ### SSL Cert and Key" >> output/$siteDomain.conf
+    echo "    ssl_certificate /path/to/cert;" >> output/$siteDomain.conf
+    echo "    ssl_certificate_key /path/to/key;" >> output/$siteDomain.conf
 
     ### Proxy Pass to another server?
+    if [[ $proxyPass -eq "1" ]]; then
+        echo "    " >> output/$siteDomain.conf
+        echo "    #TODO: Replace with proper server IP" >> output/$siteDomain.conf
+        echo "    ## Proxy Pass" >> output/$siteDomain.conf
+        echo "    location / {" >> output/$siteDomain.conf
+        echo "        proxy_pass https://SERVER_IP/;" >> output/$siteDomain.conf
+        echo "    }" >> output/$siteDomain.conf
+    fi
 
     ### Create a docroot for domain?
+    if [[ $docrootDefined -eq "1" ]]; then
+        echo "    " >> output/$siteDomain.conf
+        echo "    #TODO: Adjust docroot filepath as needed" >> output/$siteDomain.conf
+        echo "    ## Docroot" >> output/$siteDomain.conf
+        echo "    root /var/www/$siteDomain;" >> output/$siteDomain.conf
+        echo "    " >> output/$siteDomain.conf
+        echo "    ## Docroot Index" >> output/$siteDomain.conf
+        echo "    try_files index.html index.php;" >> output/$siteDomain.conf
+        echo "    " >> output/$siteDomain.conf
+        echo "    ## Disable symlink handling" >> output/$siteDomain.conf
+        echo "    disable_symlinks on;" >> output/$siteDomain.conf
+    fi
+
+    ### File blocks
+    echo "    " >> output/$siteDomain.conf
+    echo "    #TODO: Expand/adjust as needed" >> output/$siteDomain.conf
+    echo "    ## Filepath Blocks" >> output/$siteDomain.conf
+    echo "    ### Block access to xmlrpc.php" >> output/$siteDomain.conf
+    echo "    location /xmlrpc.php {" >> output/$siteDomain.conf
+    echo "        deny all;" >> output/$siteDomain.conf
+    echo "        return 403;" >> output/$siteDomain.conf
+    echo "    }" >> output/$siteDomain.conf
+    echo "    " >> output/$siteDomain.conf
+    echo "    ### Deny access to backup/config files" >> output/$siteDomain.conf
+    echo "    location ~* \.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist|gz|bz|dump|zip|gzip)$ {" >> output/$siteDomain.conf
+    echo "        deny all;" >> output/$siteDomain.conf
+    echo "        return 403;" >> output/$siteDomain.conf
+    echo "    }" >> output/$siteDomain.conf
 
     ### Close HTTPS Virtualhost tag
     echo "}" >> output/$siteDomain.conf
 
     ## Closing notes
+    printf "%s\n" \
+    "${green}VirtualHost generated" \
+    "----------------------------------------------------" \
+    "Check output dir" \
+    "Verify values correct before deploying VirtualHost${normal} "
 
 }
 
