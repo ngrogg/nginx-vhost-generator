@@ -244,6 +244,7 @@ function runProgram(){
         echo "    ## Docroot" >> output/$siteDomain.conf
         echo "    root /var/www/$siteDomain;" >> output/$siteDomain.conf
         echo "    " >> output/$siteDomain.conf
+        echo "    TODO: Adjust index as needed" >> output/$siteDomain.conf
         echo "    ## Docroot Index" >> output/$siteDomain.conf
         echo "    location / {" >> output/$siteDomain.conf
         echo "        try_files $uri $uri/ /index.php?$query_string;" >> output/$siteDomain.conf
@@ -255,6 +256,7 @@ function runProgram(){
         echo "    ## Hide nginx version" >> output/$siteDomain.conf
         echo "    server_tokens off;" >> output/$siteDomain.conf
         echo "    " >> output/$siteDomain.conf
+        echo "    TODO: Adjust as needed" >> output/$siteDomain.conf
         echo "    ## Handle PHP requests" >> output/$siteDomain.conf
         echo "    location ~ \.php$ {" >> output/$siteDomain.conf
         echo "        include fastcgi_params;" >> output/$siteDomain.conf
