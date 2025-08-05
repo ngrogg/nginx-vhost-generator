@@ -247,7 +247,7 @@ function runProgram(){
         echo "    TODO: Adjust index as needed" >> output/$siteDomain.conf
         echo "    ## Docroot Index" >> output/$siteDomain.conf
         echo "    location / {" >> output/$siteDomain.conf
-        echo "        try_files $uri $uri/ /index.php?$query_string;" >> output/$siteDomain.conf
+        echo "        try_files \$uri \$uri/ /index.php?\$query_string;" >> output/$siteDomain.conf
         echo "    }" >> output/$siteDomain.conf
         echo "    " >> output/$siteDomain.conf
         echo "    ## Disable symlink handling" >> output/$siteDomain.conf
