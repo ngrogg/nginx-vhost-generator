@@ -245,13 +245,22 @@ function runProgram(){
         echo "    root /var/www/$siteDomain;" >> output/$siteDomain.conf
         echo "    " >> output/$siteDomain.conf
         echo "    ## Docroot Index" >> output/$siteDomain.conf
-        echo "    try_files index.html index.php;" >> output/$siteDomain.conf
+        echo "    location / {" >> output/$siteDomain.conf
+        echo "        try_files $uri $uri/ /index.php?$query_string;" >> output/$siteDomain.conf
+        echo "    }" >> output/$siteDomain.conf
         echo "    " >> output/$siteDomain.conf
         echo "    ## Disable symlink handling" >> output/$siteDomain.conf
         echo "    disable_symlinks on;" >> output/$siteDomain.conf
         echo "    " >> output/$siteDomain.conf
         echo "    ## Hide nginx version" >> output/$siteDomain.conf
         echo "    server_tokens off;" >> output/$siteDomain.conf
+        echo "    " >> output/$siteDomain.conf
+        echo "    ## Handle PHP requests" >> output/$siteDomain.conf
+        echo "    location ~ \.php$ {" >> output/$siteDomain.conf
+        echo "        include fastcgi_params;" >> output/$siteDomain.conf
+        echo "        ### With php-fpm, adjust as needed" >> output/$siteDomain.conf
+        echo "        fastcgi_pass /run/php-fpm/www.sock;" >> output/$siteDomain.conf
+        echo "    }" >> output/$siteDomain.conf
     fi
 
     ### File blocks
